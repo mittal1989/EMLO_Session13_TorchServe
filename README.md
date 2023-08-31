@@ -54,8 +54,8 @@ docker run --rm --shm-size=1g         --ulimit memlock=-1         --ulimit stack
 ### 3. Next.js Server as User frontend
 - Clone the following github repo to create the node js front end.
     https://github.com/satyajitghana/sdxl-ui
-- In [env.local](frontend/sdxl-ui/.env.local) put the "NEXT_PUBLIC_BACKEND_URL" with SDXL FastAPI Server Endpoint
-- Created the [Dockerfile](frontend/sdxl-ui/Dockerfile) to run the next.js app inside the docker container.
+- In [env.local](frontend/.env.local) put the "NEXT_PUBLIC_BACKEND_URL" with SDXL FastAPI Server Endpoint
+- Created the [Dockerfile](frontend/Dockerfile) to run the next.js app inside the docker container.
 
 ### 4 Docker Compose Setup
 - Docker compose run three services : Torchserve, Fastapi and Frontend (Next.js)
@@ -86,7 +86,7 @@ Onces processed by the torchserve, we get the aws s3 image url.
     response = requests.get("http://torchserve:8080/    predictions/sdxl", data=text)
 
     ```
-- When we access the docker service from browser, its outside docker network and we can't use the service name in the url, therefore we have to use the server ip to access the service from the browser. [env.local](frontend/sdxl-ui/.env.local)
+- When we access the docker service from browser, its outside docker network and we can't use the service name in the url, therefore we have to use the server ip to access the service from the browser. [env.local](frontend/.env.local)
     ```
     NEXT_PUBLIC_BACKEND_URL=http://15.206.84.83:9080
     ```
