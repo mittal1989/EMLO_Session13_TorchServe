@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  torchserve:
+    image: pytorch/torchserve:0.8.1-gpu
+    container_name: torchserve
+    deploy:      
+      resources:        
+        reservations:          
+          devices:
+            - capabilities: [gpu]
+              driver: nvidia
+              device_ids: ['0']
+    environment:
+      - shm_size=1g
+      - memlock=-1
+      - stack=67108864
+    networks:
+      - deploy_network
+    ports:
+      - 8080:8080
+      - 8081:8081
+      - 8082:8082
+      - 7070:7070
+      - 7071:7071
+    volumes:
+      - /home/ec2-user/Session13/torchservce/config.properties:/home/model-server/config.properties
+      - type: bind
+        source: /home/ec2-user/Session13/torchservce
+        target: /tmp/models
+    command: torchserve --model-store=/tmp/models
+
+  fastapi:
+    build:
+      context: fastapi
+      dockerfile: Dockerfile
+    image: fastapi
+    container_name: fastapi
+    ports:
+      - 9080:9080
+    restart: on-failure
+    networks:
+      - deploy_network
+    command: python3 server.py --host 0.0.0.0 --port 9080
+
+  frontend:
+    build:
+      context: frontend/sdxl-ui
+      dockerfile: Dockerfile
+    image: frontend
+    container_name: frontend
+    ports:
+      - 3000:3000
+    restart: on-failure
+    networks:
+      - deploy_network
+  
+networks:
+  deploy_network:
+    driver: bridge
